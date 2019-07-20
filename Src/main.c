@@ -47,7 +47,13 @@
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-
+FATFS fs;
+FATFS *pfs;
+FIL fil;
+FRESULT fres;
+DWORD fre_clust;
+uint32_t totalSpace, freeSpace;
+char buffer[100];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,6 +102,55 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+
+	/* Wait for SD module reset */
+	HAL_Delay(500);
+
+	/* Mount SD Card */
+	if(f_mount(&fs, "", 0) != FR_OK)
+		Error_Handler();
+
+	/* Open file to write */
+	if(f_open(&fil, "first.txt", FA_OPEN_ALWAYS | FA_READ | FA_WRITE) != FR_OK)
+		Error_Handler();
+
+	/* Check freeSpace space */
+	if(f_getfree("", &fre_clust, &pfs) != FR_OK)
+		Error_Handler();
+
+	totalSpace = (uint32_t)((pfs->n_fatent - 2) * pfs->csize * 0.5);
+	freeSpace = (uint32_t)(fre_clust * pfs->csize * 0.5);
+
+	/* free space is less than 1kb */
+	if(freeSpace < 1)
+		Error_Handler();
+
+	/* Writing text */
+	f_puts("STM32 SD Card I/O Example via SPI\n", &fil);
+	f_puts("Save the world!!!", &fil);
+
+	/* Close file */
+	if(f_close(&fil) != FR_OK)
+		Error_Handler();
+
+	/* Open file to read */
+	if(f_open(&fil, "first.txt", FA_READ) != FR_OK)
+		Error_Handler();
+
+	while(f_gets(buffer, sizeof(buffer), &fil))
+	{
+		/* SWV output */
+		printf("%s", buffer);
+		fflush(stdout);
+	}
+
+	/* Close file */
+	if(f_close(&fil) != FR_OK)
+		Error_Handler();
+
+	/* Unmount SDCARD */
+	if(f_mount(NULL, "", 1) != FR_OK)
+		Error_Handler();
 
   /* USER CODE END 2 */
 
@@ -206,7 +261,7 @@ static void MX_SPI1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN SPI1_Init 2 */
-
+	
   /* USER CODE END SPI1_Init 2 */
 
 }
