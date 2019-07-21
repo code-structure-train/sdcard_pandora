@@ -3,3 +3,6 @@ progen init -p pandora -tar pandora
 
 生成工程
 progen generate -f projects.yaml -p pandora -t uvision5
+
+加入 rt-thread 精简内核
+git submodule add https://github.com/SuWeipeng/rt-thread.git Libraries/rt-thread
