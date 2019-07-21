@@ -13,6 +13,7 @@ common:
   - Drivers/STM32L4xx_HAL_Driver/Inc
   - Drivers/STM32L4xx_HAL_Driver/Inc/Legacy
   - Inc
+  - Libraries/Logger
   - Middlewares
   - Middlewares/ST
   - Middlewares/ST/STM32_USB_Device_Library
@@ -28,6 +29,8 @@ common:
     Drivers:
     - Drivers/SD_CARD/Src
     - Drivers/STM32L4xx_HAL_Driver/Src
+    Libraries:
+    - Libraries/Logger
     Middlewares:
     - Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
     - Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
